@@ -18,5 +18,5 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
-  public static final int k_LEDLength = 10;
+  public static final int k_LEDLength = 20;
 }

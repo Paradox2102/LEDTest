@@ -11,6 +11,7 @@ import frc.robot.Constants;
 
 public class LEDSubsystem extends SubsystemBase {
   private final AddressableLED m_led = new AddressableLED(0);
+  private final AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(Constants.k_LEDLength);
 
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {
