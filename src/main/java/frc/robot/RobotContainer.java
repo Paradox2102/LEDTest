@@ -24,7 +24,8 @@ import frc.robot.subsystems.LEDSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
+  private final LEDSubsystem m_leftLedSubsystem = new LEDSubsystem(0);
+  private final LEDSubsystem m_rightLedSubsystem = new LEDSubsystem(Constants.k_LEDLength);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_joystick = new CommandJoystick(0);
@@ -46,14 +47,14 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-     m_joystick.button(1).whileTrue(new SetLEDColorCommand(m_ledSubsystem, Color.kRed, true));
-     m_joystick.button(2).whileTrue(new SetLEDColorCommand(m_ledSubsystem, Color.kBlue, false));
-     m_joystick.button(3).whileTrue(new SetLEDColorCommand(m_ledSubsystem, Color.kGreen, true));
-     m_joystick.button(4).whileTrue(new SetLEDColorCommand(m_ledSubsystem, Color.kYellow, false));
-     m_joystick.button(5).whileTrue(new SetLEDColorCommand(m_ledSubsystem, Color.kPurple, true));
-     m_joystick.button(6).whileTrue(new SetLEDColorCommand(m_ledSubsystem, Color.kBlack, false));
-     m_joystick.button(8).whileTrue(new SetLEDColorCommand(m_ledSubsystem, Color.kBlack, true));
-     m_joystick.button(7).whileTrue(new MoveLEDCommand(m_ledSubsystem, Color.kRed));
+     m_joystick.button(1).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kRed, true));
+     m_joystick.button(2).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlue, false));
+     m_joystick.button(3).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kGreen, true));
+     m_joystick.button(4).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kYellow, false));
+     m_joystick.button(5).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kPurple, true));
+     m_joystick.button(6).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlack, false));
+     m_joystick.button(8).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlack, true));
+     m_joystick.button(7).whileTrue(new MoveLEDCommand(m_leftLedSubsystem, Color.kRed));
      //blue
      //green
      //yellow
