@@ -16,13 +16,11 @@ import frc.robot.subsystems.LEDSubsystem;
 public class SetLEDColorCommand extends InstantCommand {
   private final LEDSubsystem m_subsystem;
   private final AddressableLEDBuffer m_led = new AddressableLEDBuffer(Constants.k_LEDLength);
-  private Boolean m_isLeft;
-  
 
-  public SetLEDColorCommand(LEDSubsystem subsystem, Color color, Boolean isLeft) {
+  public SetLEDColorCommand(LEDSubsystem subsystem, Color color) {
     m_subsystem = subsystem;
     setLED(color);
-    m_isLeft = isLeft;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_subsystem);
   }
@@ -43,7 +41,7 @@ public class SetLEDColorCommand extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.setData(m_led, m_isLeft);
+    m_subsystem.setData(m_led);
     m_subsystem.start();
   }
 }
