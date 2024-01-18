@@ -51,6 +51,7 @@ public class RobotContainer {
       m_joystick.button(2).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlue));
       m_joystick.button(3).whileTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kGreen));
       m_joystick.button(4).whileTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kYellow));
+      m_joystick.button(5).whileTrue(new MoveLEDCommand(m_leftLedSubsystem, Color.kRed));
     //  m_joystick.button(5).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kPurple, true));
     //  m_joystick.button(6).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlack, false));
     //  m_joystick.button(8).whileTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlack, true));

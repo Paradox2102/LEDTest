@@ -5,30 +5,37 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.LEDSubsystem;
 
-public class MoveLEDCommand extends CommandBase {
+public class MoveLEDCommand extends Command {
   private final LEDSubsystem m_subsystem;
   private final AddressableLEDBuffer m_led = new AddressableLEDBuffer(Constants.k_LEDLength);
   private final Color m_color;
   private int m_index;
+  private Timer m_timer;
 
   /** Creates a new MoveLEDCommand. */
   public MoveLEDCommand(LEDSubsystem subsystem, Color color) {
     m_subsystem = subsystem;
     m_color = color;
 
+    
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("MoveLEDCommand Initionalize");
     m_subsystem.start();
     m_index = 0;
+
+    m_timer.reset();
+    m_timer.start();
   }
 
   public void setLED(Color color) {
@@ -47,10 +54,16 @@ public class MoveLEDCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    setLED(Color.kBlack);
-    m_led.setLED(m_index, m_color);
-    m_index = (m_index + 1) % Constants.k_LEDLength;
+// if (m_timer.get()) {
+//     setLED(Color.kBlack);
+//     m_led.setLED(m_index, m_color);
+//     m_index = (m_index + 1) % Constants.k_LEDLength;
+//     m_subsystem.setData(m_led);
+// }
   }
+  /*
+   *
+   */
 
   // Called once the command ends or is interrupted.
   @Override

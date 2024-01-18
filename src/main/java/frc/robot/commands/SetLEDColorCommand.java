@@ -31,10 +31,8 @@ public class SetLEDColorCommand extends InstantCommand {
   }
 
   public void setLED(Color color) {
-    int i = 0;
-    while (i < Constants.k_LEDLength) {
+    for (int i = 0; i < Constants.k_LEDLength; i++) {
       m_led.setLED(i, color);
-      i++;
     }
   }
 
