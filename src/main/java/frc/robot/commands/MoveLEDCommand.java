@@ -23,7 +23,7 @@ public class MoveLEDCommand extends Command {
     m_subsystem = subsystem;
     m_color = color;
 
-    
+
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -54,12 +54,15 @@ public class MoveLEDCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-// if (m_timer.get()) {
-//     setLED(Color.kBlack);
-//     m_led.setLED(m_index, m_color);
-//     m_index = (m_index + 1) % Constants.k_LEDLength;
-//     m_subsystem.setData(m_led);
-// }
+    //task: get the led lights to go according to a certain time (20 a sec)
+    if (m_timer.get() >= 0.1) {
+    m_led.setLED(Constants.k_LEDLength, Color.kBlack);
+    m_led.setLED(m_index, m_color);
+    m_index = (m_index + 1) % Constants.k_LEDLength;
+    m_subsystem.setData(m_led);
+
+    m_timer.reset();
+  }
   }
   /*
    *
