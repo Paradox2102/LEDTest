@@ -14,11 +14,17 @@ public class LEDSubsystem extends SubsystemBase {
   static private AddressableLEDBuffer m_ledBuffer = null; // new AddressableLEDBuffer(2 * Constants.k_LEDLength);
   private int m_startIdx;
   private int m_length;
+  private int m_width;
+  private int m_height;
   private int m_currentMaxLength = 0;
   private boolean m_commit = false;
 
   /** Creates a new LEDSubsystem. */
-  public LEDSubsystem(int startIdx, int length) {
+  public LEDSubsystem(int startIdx, int width, int height) {
+    int length = width * height;
+    m_width = width;
+    m_height = height;
+
     if (m_led == null) {
       m_led = new AddressableLED(0);
     }
@@ -33,12 +39,26 @@ public class LEDSubsystem extends SubsystemBase {
     m_led.start();
   }
 
+  public LEDSubsystem(int startIdx, int length)
+  {
+    this(startIdx, length, 1);
+  }
+
   /*
    * Sets the color of a single LED on the string
    */
   public void setLED(int idx, Color color) {
     if ((idx >= 0) && (idx < m_length)) {
       m_ledBuffer.setLED(idx + m_startIdx, color);
+    }
+  }
+
+  /*
+   * Sets the color of a single LED for a 2 dimensional array of LEDs
+   */
+  public void setLED(int x, int y, Color color) {
+    if ((x >= 0) && (x < m_width) && (y >= 0) && (y < m_height)) {
+      setLED((x * m_height) + y, color);
     }
   }
 
