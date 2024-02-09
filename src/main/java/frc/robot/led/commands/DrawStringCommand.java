@@ -12,15 +12,18 @@ import frc.robot.led.subsystems.LEDSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class DrawHorzLineCommand extends InstantCommand {
+public class DrawStringCommand extends InstantCommand {
   private final LEDSubsystem m_subsystem;
-  private final Color m_color;
+  private final String m_text;
+  private final Color m_fgColor;
+  private final Color m_bgColor;
 
-  public DrawHorzLineCommand(LEDSubsystem subsystem, Color color) {
-    Logger.log("DrawHorzLineCommand", 3, "DrawHorzLineCommand()");
-    
+  public DrawStringCommand(LEDSubsystem subsystem, String text, Color fgColor, Color bgColor) {
+    Logger.log("DrawStringCommand", 3, "DrawStringCommand()");
     m_subsystem = subsystem;
-    m_color = color;
+    m_text = text;
+    m_fgColor = fgColor;
+    m_bgColor = bgColor;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_subsystem);
@@ -34,10 +37,8 @@ public class DrawHorzLineCommand extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    for (int x = 0 ; x < 32 ; x++)
-    {
-      m_subsystem.setLED(x, 4, m_color);
-    }
+    Logger.log("DrawStringCommand", 2, "initialize()");
+    m_subsystem.drawString("2102", 0, 0, m_fgColor, m_bgColor);
     m_subsystem.commit();
   }
 }
