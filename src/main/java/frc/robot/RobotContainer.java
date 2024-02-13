@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
 import frc.robot.led.commands.DrawSinCurve;
 import frc.robot.led.commands.DrawStringCommand;
+import frc.robot.led.commands.FireAnimation2d;
 // import frc.robot.led.commands.DrawHorzLineCommand;
 import frc.robot.led.commands.MoveLEDCommand;
 import frc.robot.led.commands.SetLEDColorCommand;
@@ -57,7 +58,8 @@ public class RobotContainer {
       // m_joystick.button(4).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kBlack));
       // m_joystick.button(5).onTrue(new MoveLEDCommand(m_leftLedSubsystem, Color.kRed));
       // m_joystick.button(1).onTrue(new DrawSinCurve(m_2DLedSubsystem, Color.kBlue));
-      m_joystick.button(1).onTrue(new DrawStringCommand(m_2DLedSubsystem, " 2102", Color.kRed, Color.kBlack));
+      // m_joystick.button(1).onTrue(new DrawStringCommand(m_2DLedSubsystem, " 2102", Color.kRed, Color.kBlack));
+      m_joystick.button(1).toggleOnTrue(new FireAnimation2d(m_2DLedSubsystem));
 
   }
 
