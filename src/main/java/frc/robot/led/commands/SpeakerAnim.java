@@ -9,15 +9,26 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.apriltagsCamera.Logger;
 import frc.robot.led.subsystems.LEDSubsystem;
 
-public class MoveLEDCommand extends Command {
+import org.w3c.dom.css.RGBColor;
+
+import edu.wpi.first.wpilibj.Timer;
+
+public class SpeakerAnim extends Command {
   private final LEDSubsystem m_subsystem;
   private final Color m_color;
 
-  /** Creates a new MoveLEDCommand. */
-  public MoveLEDCommand(LEDSubsystem subsystem, Color color) {
-    Logger.log("MoveLEDCommand", 3, "MoveLEDCommand()");
+  private float delay=0.1f;
+  private int index =0;
+  private final Timer m_timer = new Timer();
+
+  /** Creates a new SpeakerAnim. */
+  public SpeakerAnim(LEDSubsystem subsystem, Color color) {
+    Logger.log("SpeakerAnim", 3, "SpeakerAnim()");
     m_subsystem = subsystem;
     m_color = color;
+    
+   
+    
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_subsystem);
@@ -26,7 +37,8 @@ public class MoveLEDCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Logger.log("MoveLEDCommand", 2, "initialize()");
+    Logger.log("SpeakerAnim", 2, "initialize()");
+    m_timer.start();
   }
 
   @Override
@@ -37,7 +49,24 @@ public class MoveLEDCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+if (m_timer.get()>=delay){
+m_timer.reset();
+index+=1;
+}
+if(index>20){
+  index=1;
+}
+    m_subsystem.setAllLEDs(Color.fromHSV(0, 255, 100));
+    m_subsystem.setLED(index, m_color);
+    m_subsystem.setLED(index+10, m_color);
+    m_subsystem.setLED(index-10, m_color);
+    m_subsystem.setLED(index+15, m_color);
+    m_subsystem.setLED(index-15, m_color);
+     m_subsystem.setLED(index+20, m_color);
+    m_subsystem.setLED(index-20, m_color);
+    m_subsystem.setLED(index+5, m_color);
+    m_subsystem.setLED(index-5, m_color);
+   m_subsystem.commit();
   }
   /*
    *
@@ -46,7 +75,7 @@ public class MoveLEDCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Logger.log("MoveLEDCommand", 2, String.format("end(%b)", interrupted));
+    Logger.log("SpeakerAnim", 2, String.format("end(%b)", interrupted));
   }
 
   // Returns true when the command should end.

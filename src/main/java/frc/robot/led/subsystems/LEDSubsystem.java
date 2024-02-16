@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.apriltagsCamera.Logger;
 
 public class LEDSubsystem extends SubsystemBase {
   static private AddressableLED m_led = null; // new AddressableLED(0);
@@ -109,7 +110,7 @@ public class LEDSubsystem extends SubsystemBase {
     if ((start + length) > m_size) {
       length = m_size - start;
     }
-
+    Logger.log("IntakeAnimation", 4, String.format("%d,%d",start,length));
     for (int i = start; i < length; i++) {
       m_ledBuffer.setLED(i + m_startIdx, color);
     }

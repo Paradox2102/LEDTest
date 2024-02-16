@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -13,9 +14,11 @@ import frc.robot.commands.Autos;
 import frc.robot.led.commands.DrawSinCurve;
 import frc.robot.led.commands.DrawStringCommand;
 import frc.robot.led.commands.FireAnimation2d;
+import frc.robot.led.commands.InRange;
 // import frc.robot.led.commands.DrawHorzLineCommand;
-import frc.robot.led.commands.MoveLEDCommand;
+import frc.robot.led.commands.StarterAnimation;
 import frc.robot.led.commands.SetLEDColorCommand;
+import frc.robot.led.commands.SpeakerAnim;
 import frc.robot.led.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
@@ -28,12 +31,13 @@ import frc.robot.subsystems.ExampleSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  // private final LEDSubsystem m_leftLedSubsystem = new LEDSubsystem(0, 256); //Constants.k_LEDLength);
-  // private final LEDSubsystem m_rightLedSubsystem = new LEDSubsystem(Constants.k_LEDLength, Constants.k_LEDLength);
-  private final LEDSubsystem m_2DLedSubsystem = new LEDSubsystem(0, 32, 8);
+  private final LEDSubsystem m_leftLedSubsystem = new LEDSubsystem(0, Constants.k_LEDLength);
+  private final LEDSubsystem m_rightLedSubsystem = new LEDSubsystem(Constants.k_LEDLength, Constants.k_LEDLength);
+  // private final LEDSubsystem m_2DLedSubsystem = new LEDSubsystem(0, 32, 8);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_joystick = new CommandJoystick(0);
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -52,14 +56,19 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-      // m_joystick.button(1).onTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kRed));
-      // m_joystick.button(2).onTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlack));
-      // m_joystick.button(3).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kGreen));
-      // m_joystick.button(4).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kBlack));
+      m_joystick.button(1).onTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kRed));
+      m_joystick.button(2).onTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlack));
+      m_joystick.button(3).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kGreen));
+      m_joystick.button(4).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kBlack));
+      m_joystick.button(5).onTrue(new StarterAnimation(m_leftLedSubsystem, Color.kOrangeRed, Color.kBlue, 1.0, 5));
+    
+      
+      
+      
       // m_joystick.button(5).onTrue(new MoveLEDCommand(m_leftLedSubsystem, Color.kRed));
       // m_joystick.button(1).onTrue(new DrawSinCurve(m_2DLedSubsystem, Color.kBlue));
       // m_joystick.button(1).onTrue(new DrawStringCommand(m_2DLedSubsystem, " 2102", Color.kRed, Color.kBlack));
-      m_joystick.button(1).toggleOnTrue(new FireAnimation2d(m_2DLedSubsystem));
+      // m_joystick.button(1).toggleOnTrue(new FireAnimation2d(m_2DLedSubsystem));
 
   }
 
