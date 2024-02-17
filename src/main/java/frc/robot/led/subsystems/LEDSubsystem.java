@@ -11,33 +11,44 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.apriltagsCamera.Logger;
 
 public class LEDSubsystem extends SubsystemBase {
+  // These fields are static because shared between all virtual strings
+  // The roboRIO can only support one AddressableLED object
+  // m_led reflects the hardware device
+  // m_ledBuffer is the buffer where we set up what we plan to send
+  // m_currentMaxLength is the length of m_led and m_ledBuffer and needs to be increased as strings are added
+  // m_commit is set to true to cause m_ledBuffer to be copied to m_led
   static private AddressableLED m_led = null; // new AddressableLED(0);
   static private AddressableLEDBuffer m_ledBuffer = null; // new AddressableLEDBuffer(2 * Constants.k_LEDLength);
-  private int m_startIdx;
-  private int m_size;
-  private int m_width;
-  private int m_height;
-  private int m_currentMaxLength = 0;
-  private boolean m_commit = false;
+  static private int m_currentMaxLength = 0;
+  static private boolean m_commit = false; // Set this to cause buffer to be copied to hardware
+
+  // These fields are specific to one virtual string
+  private int m_startIdx; // where virtual string starts in m_led 
+  private int m_size; // number of LEDs in virtual string
+  private int m_width; // width of virtual string
+  private int m_height; // height of virtual string
 
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem(int startIdx, int width, int height) {
-    int length = width * height;
+    // Set instance fields
+    m_size = width * height;
     m_width = width;
     m_height = height;
-
-    if (m_led == null) {
-      m_led = new AddressableLED(0);
-    }
     m_startIdx = startIdx;
-    m_size = length;
-    if (m_startIdx + m_size > m_currentMaxLength) {
-      m_currentMaxLength = m_startIdx + m_size;
+    // This string uses [m_startIdx, m_startIdx + m_size) in m_ledBuffer
+
+    // Now adjust the static fields
+    if (m_led == null) { // First virtual string to be created
+      m_led = new AddressableLED(/* PWM port */ 0);
+    }
+    int maxLength = m_startIdx + m_size;
+    if (maxLength > m_currentMaxLength) { // We need to extend both m_led and m_ledBuffer 
+      m_currentMaxLength = maxLength;
       m_ledBuffer = new AddressableLEDBuffer(m_currentMaxLength);
       m_led.setLength(m_currentMaxLength);
     }
 
-    m_led.start();
+    start();
   }
 
   public LEDSubsystem(int startIdx, int size) {
@@ -61,6 +72,7 @@ public class LEDSubsystem extends SubsystemBase {
    */
   public void setLED(int idx, Color color) {
     if ((idx >= 0) && (idx < m_size)) {
+      // m_ledBuffer is shared so convert from relative index to absolute index
       m_ledBuffer.setLED(idx + m_startIdx, color);
     }
   }
@@ -74,11 +86,12 @@ public class LEDSubsystem extends SubsystemBase {
         y = m_height - y - 1;
       }
       setLED((x * m_height) + y, color);
-
-      // m_led.setData(m_ledBuffer);
     }
   }
 
+  /* 
+   * Draws a single character on the string
+   */
   public void drawChar(int ch, int x0, int y0, Color fgColor, Color bgColor) {
     if ((ch >= 0) && (ch < font.length / 5)) {
       for (int x = 0 ; x < 5 ; x++) {
@@ -92,6 +105,9 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  /*
+   * Draws a string of characters on the string
+   */
   public void drawString(String text, int x, int y, Color fgColor, Color bgColor) {
     for (int i = 0 ; i < text.length() ; i++) {
       drawChar(text.charAt(i), x, y, fgColor, bgColor);
@@ -100,19 +116,17 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   /*
-   * Sets the color of multiple LEDs on the string
+   * Sets the color of a span of adjacent LEDs on the string
    */
   public void setLEDs(int start, int length, Color color) {
-    if (start < 0) {
-      start = 0;
-    }
-
-    if ((start + length) > m_size) {
-      length = m_size - start;
-    }
-    Logger.log("IntakeAnimation", 4, String.format("%d,%d",start,length));
-    for (int i = start; i < length; i++) {
-      m_ledBuffer.setLED(i + m_startIdx, color);
+    int limit = start + length; // one past the end
+    // Bring start and end into range for virtual string
+    start = Math.max(start, 0);
+    limit = Math.min(limit, m_size);
+    // TODO: Turn down this log level
+    Logger.log("LEDSubsystem", 4, String.format("setLEDs: [%d,%d) %s", start, limit, color.toString());
+    for (int i = start; i < limit; i++) {
+      m_ledBuffer.setLED(i, color);
     }
   }
 
@@ -120,9 +134,7 @@ public class LEDSubsystem extends SubsystemBase {
    * Sets the color for all the LEDs on the string
    */
   public void setAllLEDs(Color color) {
-    for (int i = 0; i < m_size; i++) {
-      m_ledBuffer.setLED(i + m_startIdx, color);
-    }
+    setLEDs(0, m_size, color);
   }
 
   /*
@@ -132,19 +144,25 @@ public class LEDSubsystem extends SubsystemBase {
     m_commit = true;
   }
 
-  public void setLedData(AddressableLEDBuffer srcBuffer, int startIdx) {
-    for (int i = 0; i < m_size; ++i) {
-      Color color = srcBuffer.getLED(i);
-      m_ledBuffer.setLED(i + startIdx, color);
-    }
+  /*
+   * Copy a buffer to the internal buffer
+   */
 
-  }
+  // public void setLedData(AddressableLEDBuffer srcBuffer, int startIdx) {
+  //   for (int i = 0; i < m_size; ++i) {
+  //     Color color = srcBuffer.getLED(i);
+  //     m_ledBuffer.setLED(i + startIdx, color);
+  //   }
+  // }
 
-  public void setData(AddressableLEDBuffer buffer) {
-    setLedData(buffer, m_startIdx);
+  /*
+   * Copy the buffer to the hardware
+   */
+  // public void setData(AddressableLEDBuffer buffer) {
+  //   setLedData(buffer, m_startIdx);
 
-    m_led.setData(m_ledBuffer);
-  }
+  //   m_led.setData(m_ledBuffer);
+  // }
 
   public void start() {
     m_led.start();
@@ -157,12 +175,17 @@ public class LEDSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // If we have new data, let's commit
+    // This flag is static so we only commit once per class regardless of how many instances exist
     if (m_commit) {
       m_led.setData(m_ledBuffer);
       m_commit = false;
     }
   }
 
+  /* 
+   * The font is a 5x7 font with 5 bytes per character
+   */
   private final char[] font = new char[] {
       0x00, 0x00, 0x00, 0x00, 0x00,
       0x3E, 0x5B, 0x4F, 0x5B, 0x3E,
