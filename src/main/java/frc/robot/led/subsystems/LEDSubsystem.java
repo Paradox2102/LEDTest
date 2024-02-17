@@ -48,6 +48,10 @@ public class LEDSubsystem extends SubsystemBase {
       m_led.setLength(m_currentMaxLength);
     }
 
+    Logger.log("LEDSubsystem", 4, 
+      String.format("start=%d, size=%d, width=%d, height=%d", 
+      m_startIdx, m_size, m_width, m_height));
+
     start();
   }
 
@@ -124,9 +128,9 @@ public class LEDSubsystem extends SubsystemBase {
     start = Math.max(start, 0);
     limit = Math.min(limit, m_size);
     // TODO: Turn down this log level
-    Logger.log("LEDSubsystem", 4, String.format("setLEDs: [%d,%d) %s", start, limit, color.toString());
-    for (int i = start; i < limit; i++) {
-      m_ledBuffer.setLED(i, color);
+    Logger.log("LEDSubsystem", 4, String.format("setLEDs: %s [%d,%d) %s", getName(), start, limit, color.toString()));
+    for (int i = start; i < limit; ++i) {
+      setLED(i, color);
     }
   }
 

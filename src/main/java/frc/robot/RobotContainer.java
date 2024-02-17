@@ -41,6 +41,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_leftLedSubsystem.setName("Left LEDs");
+    m_rightLedSubsystem.setName("Right LEDs");
     // Configure the trigger bindings
     configureBindings();
   }
