@@ -55,6 +55,96 @@ public class LEDSubsystem extends SubsystemBase {
     this(startIdx, size, 1);
   }
 
+  /* 
+   * This method scales the perceived intensity of a color
+   * using a conversion to HSV, scaling the V component, and converting back to RGB
+   */
+  private scaleRgbIntensity(Color color, double scale) {
+      void RGBtoHSV(int r, int g, int b, double[] hsv) {
+        double min, max, delta;
+        min = Math.min(r, Math.min(g, b));
+        max = Math.max(r, Math.max(g, b));
+        hsv[2] = max; // v
+        delta = max - min;
+        if (max != 0) {
+          hsv[1] = delta / max; // s
+        } else {
+          // r = g = b = 0
+          hsv[1] = 0;
+          hsv[0] = -1; // undefined
+          return;
+        }
+        if (r == max) {
+          hsv[0] = (g - b) / delta; // between yellow & magenta
+        } else if (g == max) {
+          hsv[0] = 2 + (b - r) / delta; // between cyan & yellow
+        } else {
+          hsv[0] = 4 + (r - g) / delta; // between magenta & cyan
+        }
+        hsv[0] *= 60; // degrees
+        if (hsv[0] < 0) {
+          hsv[0] += 360;
+        }
+      }
+    
+      Color HSVtoRGB(double[] hsv) {
+        int i;
+        double f, p, q, t;
+        double rgb[3];
+        if (hsv[1] == 0) {
+          // achromatic (grey)
+          rgb[0] = rgb[1] = rgb[2] = (int) (hsv[2] * 255);
+          return;
+        }
+        hsv[0] /= 60; // sector 0 to 5
+        i = (int) Math.floor(hsv[0]);
+        f = hsv[0] - i; // factorial part of h
+        p = hsv[2] * (1 - hsv[1]);
+        q = hsv[2] * (1 - hsv[1] * f);
+        t = hsv[2] * (1 - hsv[1] * (1 - f));
+        switch (i) {
+          case 0:
+            rgb[0] = (int) (hsv[2] * 255);
+            rgb[1] = (int) (t * 255);
+            rgb[2] = (int) (p * 255);
+            break;
+          case 1:
+            rgb[0] = (int) (q * 255);
+            rgb[1] = (int) (hsv[2] * 255);
+            rgb[2] = (int) (p * 255);
+            break;
+          case 2:
+            rgb[0] = (int) (p * 255);
+            rgb[1] = (int) (hsv[2] * 255);
+            rgb[2] = (int) (t * 255);
+            break;
+          case 3:
+            rgb[0] = (int) (p * 255);
+            rgb[1] = (int) (q * 255);
+            rgb[2] = (int) (hsv[2] * 255);
+            break;
+          case 4:
+            rgb[0] = (int) (t * 255);
+            rgb[1] = (int) (p * 255);
+            rgb[2] = (int) (hsv[2] * 255);
+            break;
+          default: // case 5:
+            rgb[0] = (int) (hsv[2] * 255);
+            rgb[1] = (int) (p * 255);
+            rgb[2] = (int) (q * 255);
+            break;
+        }
+        return Color(rgb[0], rgb[1], rgb[2]);
+      }
+  
+    double[] hsv = new double[3];
+    RGBtoHSV(color.red, color.green, color.blue, hsv);
+    hsv[2] *= scale;
+    return HSVtoRGB(hsv);
+  }
+
+ 
+
   public int getWidth() {
     return m_width;
   }
