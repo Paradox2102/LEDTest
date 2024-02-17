@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.apriltagsCamera.Logger;
 import frc.robot.led.subsystems.LEDSubsystem;
 
-import org.w3c.dom.css.RGBColor;
-
 import edu.wpi.first.wpilibj.Timer;
 
 public class StarterAnimation extends Command {
@@ -57,21 +55,14 @@ public class StarterAnimation extends Command {
       m_timer.reset();
       index += 1;
        
-if (index > 19){
-      index = 1-m_length;
+      if (index > 19){
+        index = 1-m_length;
+      }
+      m_subsystem.setAllLEDs(m_bColor);
+      m_subsystem.setLEDsMiddlePeak(index, m_length, m_color, 0.1);
+      m_subsystem.commit();
     }
- m_subsystem.setAllLEDs(m_bColor);
-    m_subsystem.setLEDs(index, m_length, m_color);
-    m_subsystem.commit();
-    }
-    
-  
-
-    
   }
-  /*
-   *
-   */
 
   // Called once the command ends or is interrupted.
   @Override
