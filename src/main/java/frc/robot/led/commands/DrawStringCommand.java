@@ -38,7 +38,7 @@ public class DrawStringCommand extends InstantCommand {
   @Override
   public void initialize() {
     Logger.log("DrawStringCommand", 2, "initialize()");
-    m_subsystem.drawString("2102", 0, 0, m_fgColor, m_bgColor);
+    m_subsystem.drawString(m_text, 0, 0, m_fgColor, m_bgColor);
     m_subsystem.commit();
   }
 }
