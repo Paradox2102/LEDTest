@@ -9,27 +9,31 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.apriltagsCamera.Logger;
 import frc.robot.led.subsystems.LEDSubsystem;
 
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.w3c.dom.css.RGBColor;
+
+import java.util.List;
+
 import org.w3c.dom.css.RGBColor;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class SpeakerAnim extends Command {
+public class Blinker extends Command {
   private final LEDSubsystem m_subsystem;
-  private final Color m_color;
 
-  private float delay=0.1f;
-  private int index =0;
+
+  private int index = 0;
+
   private final Timer m_timer = new Timer();
-
+  private Color m_Color;
+ 
+ private final float m_delay;
   /** Creates a new SpeakerAnim. */
-  public SpeakerAnim(LEDSubsystem subsystem, Color color) {
-    Logger.log("SpeakerAnim", 3, "SpeakerAnim()");
+  public Blinker(LEDSubsystem subsystem, float delay, Color color) {
+    Logger.log("Blinker", 3, "Blinker()");
     m_subsystem = subsystem;
-    m_color = color;
-    
-   
-    
-
+m_delay=delay;
+m_Color=color;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_subsystem);
   }
@@ -49,28 +53,32 @@ public class SpeakerAnim extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-if (m_timer.get()>=delay){
-m_timer.reset();
-index+=1;
-}
-if(index>20){
-  index=1;
-}
-    m_subsystem.setAllLEDs(Color.fromHSV(0, 255, 100));
-    m_subsystem.setLED(index, m_color);
-    m_subsystem.setLED(index+10, m_color);
-    m_subsystem.setLED(index-10, m_color);
-    m_subsystem.setLED(index+15, m_color);
-    m_subsystem.setLED(index-15, m_color);
-     m_subsystem.setLED(index+20, m_color);
-    m_subsystem.setLED(index-20, m_color);
-    m_subsystem.setLED(index+5, m_color);
-    m_subsystem.setLED(index-5, m_color);
-   m_subsystem.commit();
+    if (m_delay==0){
+ m_subsystem.setAllLEDs(m_Color);
+    }else{
+      if (m_timer.get() >= m_delay) {
+      m_timer.reset();
+      index += 1;
+      if (index>1){
+        m_subsystem.setAllLEDs(Color.kBlack);
+      }else{
+      m_subsystem.setAllLEDs(m_Color);
+    }
+    if (index>2){
+      index=0;
+    }
+  }
+    }
+    
+   
+    
+    m_subsystem.commit();
   }
   /*
    *
    */
+
+  
 
   // Called once the command ends or is interrupted.
   @Override

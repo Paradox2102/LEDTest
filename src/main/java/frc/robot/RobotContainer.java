@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
+import frc.robot.led.commands.Blinker;
 import frc.robot.led.commands.DrawSinCurve;
 import frc.robot.led.commands.DrawStringCommand;
 import frc.robot.led.commands.FireAnimation2d;
@@ -17,14 +18,19 @@ import frc.robot.led.commands.InRange;
 // import frc.robot.led.commands.DrawHorzLineCommand;
 import frc.robot.led.commands.StarterAnimation;
 import frc.robot.led.commands.SetLEDColorCommand;
-import frc.robot.led.commands.SpeakerAnim;
+import frc.robot.led.commands.ParadoxAnim;
+import frc.robot.led.commands.ProgressBar;
+import frc.robot.led.commands.RainbowAnim;
 import frc.robot.led.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -36,9 +42,10 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandJoystick m_joystick = new CommandJoystick(0);
-  
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     m_leftLedSubsystem.setName("Left LEDs");
     m_rightLedSubsystem.setName("Right LEDs");
@@ -47,29 +54,38 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * Use this method to define your trigger->command mappings. Triggers can be
+   * created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+   * an arbitrary
    * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+   * {@link
+   * CommandXboxController
+   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-      m_joystick.button(1).onTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kRed));
-      m_joystick.button(2).onTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlack));
-      m_joystick.button(3).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kGreen));
-      m_joystick.button(4).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kBlack));
-      m_joystick.button(5).onTrue(new StarterAnimation(m_leftLedSubsystem, Color.kOrangeRed, Color.kBlue, 0.2, 5));
-    
-      
-      
-      
-      // m_joystick.button(5).onTrue(new MoveLEDCommand(m_leftLedSubsystem, Color.kRed));
-      // m_joystick.button(1).onTrue(new DrawSinCurve(m_2DLedSubsystem, Color.kBlue));
-      // m_joystick.button(1).onTrue(new DrawStringCommand(m_2DLedSubsystem, " 2102", Color.kRed, Color.kBlack));
-      // m_joystick.button(1).toggleOnTrue(new FireAnimation2d(m_2DLedSubsystem));
+    m_joystick.button(1).onTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kRed));
+    m_joystick.button(2).onTrue(new SetLEDColorCommand(m_leftLedSubsystem, Color.kBlack));
+    m_joystick.button(3).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kGreen));
+    m_joystick.button(4).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kBlack));
+    m_joystick.button(5).onTrue(new StarterAnimation(m_leftLedSubsystem, Color.kOrangeRed, Color.kBlue, 0.02, 5));
+    m_joystick.button(6).onTrue(new ParadoxAnim(m_leftLedSubsystem, 0.1f));
+m_joystick.button(7).onTrue(new RainbowAnim(m_leftLedSubsystem));
+m_joystick.button(8).onTrue(new Blinker(m_leftLedSubsystem, 0.1f,Color.kBlue));
+
+m_joystick.button(9).onTrue(new ProgressBar(m_leftLedSubsystem));
+
+    // m_joystick.button(5).onTrue(new MoveLEDCommand(m_leftLedSubsystem,
+    // Color.kRed));
+    // m_joystick.button(1).onTrue(new DrawSinCurve(m_2DLedSubsystem, Color.kBlue));
+    // m_joystick.button(1).onTrue(new DrawStringCommand(m_2DLedSubsystem, " 2102",
+    // Color.kRed, Color.kBlack));
+    // m_joystick.button(1).toggleOnTrue(new FireAnimation2d(m_2DLedSubsystem));
 
   }
 
