@@ -55,7 +55,7 @@ public class StarterAnimation extends Command {
       m_timer.reset();
       index += 1;
        
-      if (index > 19){
+      if (index >= m_subsystem.getSize()){
         index = 1-m_length;
       }
       m_subsystem.setAllLEDs(m_bColor);

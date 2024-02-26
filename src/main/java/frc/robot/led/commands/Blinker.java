@@ -9,31 +9,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.apriltagsCamera.Logger;
 import frc.robot.led.subsystems.LEDSubsystem;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.RGBColor;
-
-import java.util.List;
-
-import org.w3c.dom.css.RGBColor;
-
 import edu.wpi.first.wpilibj.Timer;
 
 public class Blinker extends Command {
   private final LEDSubsystem m_subsystem;
 
-
   private int index = 0;
 
   private final Timer m_timer = new Timer();
-  private Color m_Color;
- 
- private final float m_delay;
+  private Color m_color;
+
+  private final float m_delay;
+
   /** Creates a new SpeakerAnim. */
   public Blinker(LEDSubsystem subsystem, float delay, Color color) {
     Logger.log("Blinker", 3, "Blinker()");
     m_subsystem = subsystem;
-m_delay=delay;
-m_Color=color;
+    m_delay = delay;
+    m_color = color;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_subsystem);
   }
@@ -53,32 +46,28 @@ m_Color=color;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_delay==0){
- m_subsystem.setAllLEDs(m_Color);
-    }else{
+    if (m_delay == 0) {
+      m_subsystem.setAllLEDs(m_color);
+    } else {
       if (m_timer.get() >= m_delay) {
-      m_timer.reset();
-      index += 1;
-      if (index>1){
-        m_subsystem.setAllLEDs(Color.kBlack);
-      }else{
-      m_subsystem.setAllLEDs(m_Color);
+        m_timer.reset();
+        index += 1;
+        if (index > 1) {
+          m_subsystem.setAllLEDs(Color.kBlack);
+        } else {
+          m_subsystem.setAllLEDs(m_color);
+        }
+        if (index > 2) {
+          index = 0;
+        }
+      }
     }
-    if (index>2){
-      index=0;
-    }
-  }
-    }
-    
-   
-    
+
     m_subsystem.commit();
   }
   /*
    *
    */
-
-  
 
   // Called once the command ends or is interrupted.
   @Override

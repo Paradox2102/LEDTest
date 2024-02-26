@@ -8,21 +8,19 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.apriltagsCamera.Logger;
 import frc.robot.led.subsystems.LEDSubsystem;
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.RGBColor;
-import java.util.List;
 import edu.wpi.first.wpilibj.Timer;
 
 public class ProgressBar extends Command {
   private final LEDSubsystem m_subsystem;
-  private int index = 0;
-  private int remaining = 20;
+  private int m_remaining;
   private final Timer m_timer = new Timer();
+  private double m_time;
 
   /** Creates a new SpeakerAnim. */
-  public ProgressBar(LEDSubsystem subsystem) {
+  public ProgressBar(LEDSubsystem subsystem, double time) {
     Logger.log("ProgressBar", 3, "ProgressBar()");
     m_subsystem = subsystem;
+    m_time = time;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_subsystem);
@@ -33,8 +31,8 @@ public class ProgressBar extends Command {
   public void initialize() {
     Logger.log("ProgressBar", 2, "initialize()");
     m_timer.start();
-     index = 0;
-   remaining = 20;
+    m_timer.reset();
+    m_remaining = m_subsystem.getSize();
   }
 
   @Override
@@ -45,18 +43,18 @@ public class ProgressBar extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_timer.get() > 0.5) {
-      m_timer.reset();
-      remaining -= 1;
-      m_subsystem.setAllLEDs(Color.kBlack);
-      while (index < remaining) {
-        m_subsystem.setLED(index, Color.fromHSV(remaining*3, 255, 255));
-        index += 1;
-      }
-      index=0;
-      m_subsystem.commit();
+    int size = m_subsystem.getSize();
+    m_remaining = size - (int) (size * m_timer.get() / m_time);
+    int green = 255 * m_remaining / size;
+    int red = 255 - green;
+
+    m_subsystem.setAllLEDs(Color.kBlack);
+
+    for (int i = 0; i < m_remaining; i++) {
+      m_subsystem.setLED(i, new Color(red, green, 0));
     }
 
+    m_subsystem.commit();
   }
   /*
    *
@@ -66,13 +64,13 @@ public class ProgressBar extends Command {
   @Override
   public void end(boolean interrupted) {
     Logger.log("ProgressBar", 2, String.format("end(%b)", interrupted));
-  
+
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return remaining < 0;
+    return m_remaining < 0;
   }
 }
 

@@ -15,7 +15,8 @@ public class LEDSubsystem extends SubsystemBase {
   // The roboRIO can only support one AddressableLED object
   // m_led reflects the hardware device
   // m_ledBuffer is the buffer where we set up what we plan to send
-  // m_currentMaxLength is the length of m_led and m_ledBuffer and needs to be increased as strings are added
+  // m_currentMaxLength is the length of m_led and m_ledBuffer and needs to be
+  // increased as strings are added
   // m_commit is set to true to cause m_ledBuffer to be copied to m_led
   static private AddressableLED m_led = null; // new AddressableLED(0);
   static private AddressableLEDBuffer m_ledBuffer = null; // new AddressableLEDBuffer(2 * Constants.k_LEDLength);
@@ -23,18 +24,20 @@ public class LEDSubsystem extends SubsystemBase {
   static private boolean m_commit = false; // Set this to cause buffer to be copied to hardware
 
   // These fields are specific to one virtual string
-  private int m_startIdx; // where virtual string starts in m_led 
+  private int m_startIdx; // where virtual string starts in m_led
   private int m_size; // number of LEDs in virtual string
   private int m_width; // width of virtual string
   private int m_height; // height of virtual string
+  private boolean m_invert; // if true, invert the direction of the string.
 
   /** Creates a new LEDSubsystem. */
-  public LEDSubsystem(int startIdx, int width, int height) {
+  public LEDSubsystem(int startIdx, int width, int height, boolean invert) {
     // Set instance fields
     m_size = width * height;
     m_width = width;
     m_height = height;
     m_startIdx = startIdx;
+    m_invert = invert;
     // This string uses [m_startIdx, m_startIdx + m_size) in m_ledBuffer
 
     // Now adjust the static fields
@@ -42,26 +45,35 @@ public class LEDSubsystem extends SubsystemBase {
       m_led = new AddressableLED(/* PWM port */ 0);
     }
     int maxLength = m_startIdx + m_size;
-    if (maxLength > m_currentMaxLength) { // We need to extend both m_led and m_ledBuffer 
+    if (maxLength > m_currentMaxLength) { // We need to extend both m_led and m_ledBuffer
       m_currentMaxLength = maxLength;
       m_ledBuffer = new AddressableLEDBuffer(m_currentMaxLength);
       m_led.setLength(m_currentMaxLength);
     }
 
-    Logger.log("LEDSubsystem", 4, 
-      String.format("start=%d, size=%d, width=%d, height=%d", 
-      m_startIdx, m_size, m_width, m_height));
+    Logger.log("LEDSubsystem", 4,
+        String.format("start=%d, size=%d, width=%d, height=%d",
+            m_startIdx, m_size, m_width, m_height));
 
     start();
   }
 
-  public LEDSubsystem(int startIdx, int size) {
-    this(startIdx, size, 1);
+  public LEDSubsystem(int startIdx, int size, boolean invert) {
+    this(startIdx, size, 1, invert);
   }
 
-  /* 
+  public LEDSubsystem(int startIdx, int size) {
+    this(startIdx, size, 1, false);
+  }
+
+  public void setInverted(boolean invert) {
+    m_invert = invert;
+  }
+
+  /*
    * This method scales the perceived intensity of a color.
-   * This is a naive implementation as a placeholder for implementing something better later.
+   * This is a naive implementation as a placeholder for implementing something
+   * better later.
    */
   private Color scaleRgbIntensity(Color color, double scale) {
     return new Color(color.red * scale, color.green * scale, color.blue * scale);
@@ -83,6 +95,11 @@ public class LEDSubsystem extends SubsystemBase {
    * Sets the color of a single LED on the string
    */
   public void setLED(int idx, Color color) {
+    if (m_invert)
+    {
+      idx = m_size - idx - 1;
+    }
+    
     if ((idx >= 0) && (idx < m_size)) {
       // m_ledBuffer is shared so convert from relative index to absolute index
       m_ledBuffer.setLED(idx + m_startIdx, color);
@@ -101,15 +118,15 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
-  /* 
+  /*
    * Draws a single character on the string
    */
   public void drawChar(int ch, int x0, int y0, Color fgColor, Color bgColor) {
     if ((ch >= 0) && (ch < font.length / 5)) {
-      for (int x = 0 ; x < 5 ; x++) {
+      for (int x = 0; x < 5; x++) {
         int v = font[(ch * 5) + x] & 0xff;
 
-        for (int y = 0 ; y < 7 ; y++) {
+        for (int y = 0; y < 7; y++) {
           setLED(x + x0, y + y0, (v & 1) == 1 ? fgColor : bgColor);
           v >>= 1;
         }
@@ -121,7 +138,7 @@ public class LEDSubsystem extends SubsystemBase {
    * Draws a string of characters on the string
    */
   public void drawString(String text, int x, int y, Color fgColor, Color bgColor) {
-    for (int i = 0 ; i < text.length() ; i++) {
+    for (int i = 0; i < text.length(); i++) {
       drawChar(text.charAt(i), x, y, fgColor, bgColor);
       x += 5;
     }
@@ -135,26 +152,28 @@ public class LEDSubsystem extends SubsystemBase {
     // Bring start and end into range for virtual string
     start = Math.max(start, 0);
     limit = Math.min(limit, m_size);
-    Logger.log("LEDSubsystem", 0, String.format("setLEDs: %s [%d,%d) %s", getName(), start, limit, color.toString()));
+    // Logger.log("LEDSubsystem", 0, String.format("setLEDs: %s [%d,%d) %s",
+    // getName(), start, limit, color.toString()));
     for (int i = start; i < limit; ++i) {
       setLED(i, color);
     }
   }
 
   /*
-   * Set a range of adjacent LEDs with the centre LED(s) at the given color, and others dimmer.  
+   * Set a range of adjacent LEDs with the centre LED(s) at the given color, and
+   * others dimmer.
    */
   public void setLEDsMiddlePeak(int start, int length, Color color, double scale) {
     int limit = start + length; // one past the end
     // Bring start and end into range for virtual string
     start = Math.max(start, 0);
     limit = Math.min(limit, m_size);
-    double maxDistance = Math.floor((length-1)/2);
-    double middle = start + (length-1)/2;
+    double maxDistance = Math.floor((length - 1) / 2);
+    double middle = start + (length - 1) / 2;
     Logger.log("LEDSubsystem", 0, String.format("setLEDs: %s [%d,%d) %s", getName(), start, limit, color.toString()));
     for (int i = start; i < limit; ++i) {
-      double distance = Math.floor(Math.abs(middle-i));
-      double scale2 = 1 - (1-scale) * distance/maxDistance;
+      double distance = Math.floor(Math.abs(middle - i));
+      double scale2 = 1 - (1 - scale) * distance / maxDistance;
       setLED(i, scaleRgbIntensity(color, scale2));
     }
   }
@@ -173,26 +192,6 @@ public class LEDSubsystem extends SubsystemBase {
     m_commit = true;
   }
 
-  /*
-   * Copy a buffer to the internal buffer
-   */
-
-  // public void setLedData(AddressableLEDBuffer srcBuffer, int startIdx) {
-  //   for (int i = 0; i < m_size; ++i) {
-  //     Color color = srcBuffer.getLED(i);
-  //     m_ledBuffer.setLED(i + startIdx, color);
-  //   }
-  // }
-
-  /*
-   * Copy the buffer to the hardware
-   */
-  // public void setData(AddressableLEDBuffer buffer) {
-  //   setLedData(buffer, m_startIdx);
-
-  //   m_led.setData(m_ledBuffer);
-  // }
-
   public void start() {
     m_led.start();
 
@@ -205,14 +204,15 @@ public class LEDSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // If we have new data, let's commit
-    // This flag is static so we only commit once per class regardless of how many instances exist
+    // This flag is static so we only commit once per class regardless of how many
+    // instances exist
     if (m_commit) {
       m_led.setData(m_ledBuffer);
       m_commit = false;
     }
   }
 
-  /* 
+  /*
    * The font is a 5x7 font with 5 bytes per character
    */
   private final char[] font = new char[] {

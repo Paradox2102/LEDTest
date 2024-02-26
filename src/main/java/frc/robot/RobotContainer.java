@@ -11,10 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
 import frc.robot.led.commands.Blinker;
-import frc.robot.led.commands.DrawSinCurve;
-import frc.robot.led.commands.DrawStringCommand;
 import frc.robot.led.commands.FireAnimation2d;
-import frc.robot.led.commands.InRange;
 // import frc.robot.led.commands.DrawHorzLineCommand;
 import frc.robot.led.commands.StarterAnimation;
 import frc.robot.led.commands.SetLEDColorCommand;
@@ -36,7 +33,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final LEDSubsystem m_leftLedSubsystem = new LEDSubsystem(0, Constants.k_LEDLength);
+  private final LEDSubsystem m_leftLedSubsystem = new LEDSubsystem(0, 40);
   private final LEDSubsystem m_rightLedSubsystem = new LEDSubsystem(Constants.k_LEDLength, Constants.k_LEDLength);
   // private final LEDSubsystem m_2DLedSubsystem = new LEDSubsystem(0, 32, 8);
 
@@ -75,10 +72,11 @@ public class RobotContainer {
     m_joystick.button(4).onTrue(new SetLEDColorCommand(m_rightLedSubsystem, Color.kBlack));
     m_joystick.button(5).onTrue(new StarterAnimation(m_leftLedSubsystem, Color.kOrangeRed, Color.kBlue, 0.02, 5));
     m_joystick.button(6).onTrue(new ParadoxAnim(m_leftLedSubsystem, 0.1f));
-m_joystick.button(7).onTrue(new RainbowAnim(m_leftLedSubsystem));
-m_joystick.button(8).onTrue(new Blinker(m_leftLedSubsystem, 0.1f,Color.kBlue));
+    m_joystick.button(7).onTrue(new RainbowAnim(m_leftLedSubsystem));
+    m_joystick.button(8).onTrue(new Blinker(m_leftLedSubsystem, 0.5f, Color.kBlue));
 
-m_joystick.button(9).onTrue(new ProgressBar(m_leftLedSubsystem));
+    m_joystick.button(9).onTrue(new ProgressBar(m_leftLedSubsystem, 10.0));
+    m_joystick.button(10).onTrue(new FireAnimation2d(m_leftLedSubsystem));
 
     // m_joystick.button(5).onTrue(new MoveLEDCommand(m_leftLedSubsystem,
     // Color.kRed));

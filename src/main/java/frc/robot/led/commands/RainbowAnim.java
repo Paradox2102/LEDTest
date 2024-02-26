@@ -9,21 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.apriltagsCamera.Logger;
 import frc.robot.led.subsystems.LEDSubsystem;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.RGBColor;
-
-import java.util.List;
-
-import org.w3c.dom.css.RGBColor;
-
-import edu.wpi.first.wpilibj.Timer;
-
 public class RainbowAnim extends Command {
   private final LEDSubsystem m_subsystem;
-
-
-  private int index = 0;
-  private final Timer m_timer = new Timer();
 
   /** Creates a new SpeakerAnim. */
   public RainbowAnim(LEDSubsystem subsystem) {
@@ -38,11 +25,16 @@ public class RainbowAnim extends Command {
   @Override
   public void initialize() {
     Logger.log("SpeakerAnim", 2, "initialize()");
-   while (index<20) {
-    m_subsystem.setLED(index,Color.fromHSV(index*7, 255, 255));
-    index+=1;
-   }
-   m_subsystem.commit();
+    int size = m_subsystem.getSize();
+    int index = 0;
+
+    while (index < size) {
+      int hue = 180 * index / size;
+      
+      m_subsystem.setLED(index, Color.fromHSV(hue, 255, 255));
+      index += 1;
+    }
+    m_subsystem.commit();
   }
 
   @Override
@@ -57,8 +49,6 @@ public class RainbowAnim extends Command {
   /*
    *
    */
-
-  
 
   // Called once the command ends or is interrupted.
   @Override

@@ -9,29 +9,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.apriltagsCamera.Logger;
 import frc.robot.led.subsystems.LEDSubsystem;
 
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.RGBColor;
-
-import java.util.List;
-
-import org.w3c.dom.css.RGBColor;
-
 import edu.wpi.first.wpilibj.Timer;
 
 public class ParadoxAnim extends Command {
   private final LEDSubsystem m_subsystem;
 
-
   private int index = 0;
   private final Timer m_timer = new Timer();
-  private int hue=0;
-  private int changeSpeed=20;
- private final float m_delay;
+  private int hue = 0;
+  private int changeSpeed = 20;
+  private final float m_delay;
+
   /** Creates a new SpeakerAnim. */
   public ParadoxAnim(LEDSubsystem subsystem, float delay) {
     Logger.log("ParadoxAnim", 3, "ParadoxAnim()");
     m_subsystem = subsystem;
-m_delay=delay;
+    m_delay = delay;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_subsystem);
   }
@@ -54,29 +47,29 @@ m_delay=delay;
     if (m_timer.get() >= m_delay) {
       m_timer.reset();
       index += 1;
+
+      if (index < 30) {
+        hue = (hue * changeSpeed + 30 + changeSpeed) / (changeSpeed + 1);
+      }
+
+      if (index >= 30 && index < 60) {
+        hue = (hue * changeSpeed + 120 + changeSpeed) / (changeSpeed + 1);
+      }
+      if (index >= 60) {
+        hue = (hue * changeSpeed + 180 + changeSpeed) / (changeSpeed + 1);
+      }
+      if (index > 90) {
+        index = 0;
+        hue = 0;
+      }
+      m_subsystem.setAllLEDs(Color.fromHSV(hue, 255, 255));
+
+      m_subsystem.commit();
     }
-    if (index < 30) {
-     hue=(hue*changeSpeed+30+changeSpeed)/(changeSpeed+1);
-    }
-     
-     if (index >= 30&&index<60) {
-      hue=(hue*changeSpeed+120+changeSpeed)/(changeSpeed+1);
-    }
-    if (index>=60) {
-    hue=(hue*changeSpeed+180+changeSpeed)/(changeSpeed+1);
-    }if (index>90) {
-      index=0;
-      hue=0;
-    }
-    m_subsystem.setAllLEDs(Color.fromHSV(hue, 255, 255));
-    
-    m_subsystem.commit();
   }
   /*
    *
    */
-
-  
 
   // Called once the command ends or is interrupted.
   @Override
